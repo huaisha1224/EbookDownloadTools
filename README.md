@@ -27,6 +27,9 @@ EbookDownloadTools
 ###配置文件说明
 
     [info]
-    BookCategory = tljs
+    BookCategory = tljs   
+    ；要下载的分类书籍|请确保填写的分类地址和http://book.zi5.me/gentre上的分类缩写是一样的；
+    ；http://book.zi5.me/archives/book-gentre/tljs 这个是推理惊悚的分类；填写tljs即可
     SavePath = F:/book
-
+    ；本地存放书籍的目录，请填写一个本地已存在的目录
+    
