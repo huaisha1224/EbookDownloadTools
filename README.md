@@ -17,3 +17,16 @@ EbookDownloadTools
 
     1. goquery  ；用于提取网页里面的内容；如标题/url下载地址等等
     2. goini    ；用于从配置文件里面读取内容
+
+###配置文件格式
+
+    [info]
+    BookCategory = tljs
+    SavePath = F:/book
+
+###配置文件说明
+
+    [info]
+    BookCategory = tljs
+    SavePath = F:/book
+
