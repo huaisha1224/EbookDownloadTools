@@ -89,7 +89,14 @@ func DownloadBook(bookUrl, bookName string) {
 	 *最后用io.Copy拷贝文件到本地
 	 */
 	conf := goini.SetConfig("./config.ini")
-	savePath := conf.GetValue("info", "SavePath") + "/"
+	category := conf.GetValue("info", "BookCategory")
+	savePath := conf.GetValue("info", "SavePath") + "/" + category
+
+	_, err := os.Stat(savePath)
+	if err != nil {
+		os.Mkdir(savePath, 0777)
+	}
+
 	//判断传入的下载地址结尾是pdf/mobi/epub、用来区分文件类型
 	var name string
 	if strings.Contains(bookUrl, ".pdf") == true {
@@ -99,9 +106,9 @@ func DownloadBook(bookUrl, bookName string) {
 	} else {
 		name = ".epub"
 	}
-	//存放书籍地址
+	//下载书籍并保存到本地
 	res, _ := http.Get(bookUrl)
-	file, _ := os.Create(savePath + bookName + name)
+	file, _ := os.Create(savePath + "/" + bookName + name)
 	if res.Body != nil {
 		defer res.Body.Close()
 	}
@@ -113,4 +120,8 @@ func main() {
 	conf := goini.SetConfig("./config.ini")
 	category := conf.GetValue("info", "BookCategory")
 	GetZi5PageUrl(category)
+
+	//url := "http://book.zi5.me/download/50002416/d1208.mobi"
+	//name := "吧时间当朋友"
+	//DownloadBook(url, name)
 }
