@@ -44,7 +44,7 @@ func GetZi5PageUrl(category string) {
 				//取到text里面的所有"href"属性的数据
 				for x := 0; x < text.Length(); x++ {
 					bookUrl := text.Eq(x).Attr("href")
-					DownloadLinks(bookUrl)
+					GetDownloadLinks(bookUrl)
 				}
 			} else { //如果text的长度小于0表示没有找到
 				fmt.Print("本分类下已经没有书籍\n")
@@ -54,7 +54,7 @@ func GetZi5PageUrl(category string) {
 	}
 }
 
-func DownloadLinks(url string) {
+func GetDownloadLinks(url string) {
 	/*
 	 *通过传入的书籍URL地址；提取到下载地址
 	 *提取书籍的名称和url地址
@@ -81,8 +81,16 @@ func DownloadLinks(url string) {
 }
 
 func DownloadBook(bookUrl, bookName string) {
+	/*
+	 *通过传入书籍的下载URL和书籍名称来下载书籍并命名
+	 *获取配置文件里面的存放路径
+	 *通过判断传入的下载URL地址结尾来判断文件名称是pdf/mobi/epub格式
+	 *然后用http.Get访问书籍地址
+	 *最后用io.Copy拷贝文件到本地
+	 */
 	conf := goini.SetConfig("./config.ini")
 	savePath := conf.GetValue("info", "SavePath") + "/"
+	//判断传入的下载地址结尾是pdf/mobi/epub、用来区分文件类型
 	var name string
 	if strings.Contains(bookUrl, ".pdf") == true {
 		name = ".pdf"
@@ -91,6 +99,7 @@ func DownloadBook(bookUrl, bookName string) {
 	} else {
 		name = ".epub"
 	}
+	//存放书籍地址
 	res, _ := http.Get(bookUrl)
 	file, _ := os.Create(savePath + bookName + name)
 	if res.Body != nil {
@@ -104,8 +113,4 @@ func main() {
 	conf := goini.SetConfig("./config.ini")
 	category := conf.GetValue("info", "BookCategory")
 	GetZi5PageUrl(category)
-	//bookUrl := "http://book.zi5.me/download/50000860/d430.pdf"
-	//bookName := "黑色大丽花"
-	//downloadbook(bookUrl, bookName)
-
 }
