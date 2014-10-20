@@ -1,10 +1,15 @@
 /*
- *Copyright 2014 DownBookZi5
+ *Copyright 2014 EbookDownloadTools
  *author      	=	"Sam Huang"
- *name    		=	"DownBookZi5"
- *version 		=   "0.0.2"
+ *name    		=	"EbookDownloadTools"
+ *version 		=   "0.0.5"
  *url 			=	"http://www.hiadmin.org"
  *author_email	=	"sam.hxq@gmail.com"
+ *
+ *子乌书简是我看电子书内容的主要来源；书简里面的书由子午手动校对所以质量都比较可靠；
+ *去年子乌书简关闭之前我写过一个Python脚本吧所有的书籍下载回来；今年子乌书简重开之后Python不能用
+ *所以就用GOlang重新写了一个程序来下载子乌书简上的书籍；这次为了减轻对服务器的压力；
+ *不能一次性下载全部书籍；一次性只能下载一个分类；我想很多书友也不需要下载全部的书籍。
  */
 package main
 
@@ -90,10 +95,13 @@ func DownloadBook(bookUrl, bookName string) {
 	 */
 	conf := goini.SetConfig("./config.ini")
 	category := conf.GetValue("info", "BookCategory")
-	savePath := conf.GetValue("info", "SavePath") + "/" + category
+	tempSavePath := conf.GetValue("info", "SavePath")
+	savePath := tempSavePath + "/" + category
 
-	_, err := os.Stat(savePath)
-	if err != nil {
+	if _, err := os.Stat(tempSavePath); err != nil {
+		os.Mkdir(tempSavePath, 0777)
+		os.Mkdir(savePath, 0777)
+	} else {
 		os.Mkdir(savePath, 0777)
 	}
 
@@ -121,7 +129,9 @@ func main() {
 	category := conf.GetValue("info", "BookCategory")
 	GetZi5PageUrl(category)
 
+	//测试下载
 	//url := "http://book.zi5.me/download/50002416/d1208.mobi"
 	//name := "吧时间当朋友"
 	//DownloadBook(url, name)
+
 }
