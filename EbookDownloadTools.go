@@ -2,7 +2,7 @@
  *Copyright 2014 EbookDownloadTools
  *author      	=	"Sam Huang"
  *name    		=	"EbookDownloadTools"
- *version 		=   "0.0.5"
+ *version 		=   "0.6"
  *url 			=	"http://www.hiadmin.org"
  *author_email	=	"sam.hxq@gmail.com"
  *
@@ -96,6 +96,7 @@ func DownloadBook(bookUrl, bookName string) {
 	conf := goini.SetConfig("./config.ini")
 	category := conf.GetValue("info", "BookCategory")
 	tempSavePath := conf.GetValue("info", "SavePath")
+	bookType := conf.GetValue("info", "BookType")
 	savePath := tempSavePath + "/" + category
 
 	if _, err := os.Stat(tempSavePath); err != nil {
@@ -107,31 +108,32 @@ func DownloadBook(bookUrl, bookName string) {
 
 	//判断传入的下载地址结尾是pdf/mobi/epub、用来区分文件类型
 	var name string
-	if strings.Contains(bookUrl, ".pdf") == true {
-		name = ".pdf"
-	} else if strings.Contains(bookUrl, ".mobi") == true {
+	if strings.Contains(bookUrl, ".mobi") == true {
 		name = ".mobi"
-	} else {
+	} else if strings.Contains(bookUrl, ".epub") == true {
 		name = ".epub"
+	} else if strings.Contains(bookUrl, ".azw") == true {
+		name = ".azw"
+	} else {
+		name = ".pdf"
 	}
-	//下载书籍并保存到本地
-	res, _ := http.Get(bookUrl)
-	file, _ := os.Create(savePath + "/" + bookName + name)
-	if res.Body != nil {
-		defer res.Body.Close()
+
+	//判断用户希望下载的书籍类型并下载保存到本地
+	if name == bookType || name == ".pdf" {
+		res, _ := http.Get(bookUrl)
+		file, _ := os.Create(savePath + "/" + bookName + name)
+		if res.Body != nil {
+			defer res.Body.Close()
+		}
+		io.Copy(file, res.Body)
+		fmt.Println("下载完成")
+
 	}
-	io.Copy(file, res.Body)
-	fmt.Println("下载完成")
 
 }
 func main() {
 	conf := goini.SetConfig("./config.ini")
 	category := conf.GetValue("info", "BookCategory")
 	GetZi5PageUrl(category)
-
-	//测试下载
-	//url := "http://book.zi5.me/download/50002416/d1208.mobi"
-	//name := "吧时间当朋友"
-	//DownloadBook(url, name)
 
 }
